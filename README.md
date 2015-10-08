@@ -17,26 +17,26 @@ Require this package in your composer.json and run composer update:
 Usage
 --------------
 
-Just use `->check(videoId)` with the provider you want
+Just use `$provider->check(videoId)` with the provider you want
 
 ```php
 
-$yt = new Mascame\VideoChecker\YoutubeProvider();
+$youtubeProvider = new Mascame\VideoChecker\YoutubeProvider();
 
-var_dump($yt->check('C7OfO6r_5m0')); // true
-var_dump($yt->check('CWO3Tuo35-o')); // false
-
-
-$vimeo = new Mascame\VideoChecker\VimeoProvider();
-
-var_dump($vimeo->check(31161781)); // true
-var_dump($vimeo->check('34134308a')); // false
+var_dump($youtubeProvider->check('C7OfO6r_5m0')); // true
+var_dump($youtubeProvider->check('CWO3Tuo35-o')); // false
 
 
-$dm = new Mascame\VideoChecker\DailymotionProvider();
+$vimeoProvider = new Mascame\VideoChecker\VimeoProvider();
 
-var_dump($dm->check('x38rpxc')); // true
-var_dump($dm->check('x38rpxc3232')); // false
+var_dump($vimeoProvider->check(31161781)); // true
+var_dump($vimeoProvider->check('34134308a')); // false
+
+
+$dailymotionProvider = new Mascame\VideoChecker\DailymotionProvider();
+
+var_dump($dailymotionProvider->check('x38rpxc')); // true
+var_dump($dailymotionProvider->check('x38rpxc3232')); // false
 
 ```
 
