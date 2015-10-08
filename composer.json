@@ -1,6 +1,6 @@
 {
   "name": "mascame/video-checker",
-  "description": "Check if a video of a certain provider is available online.",
+  "description": "Check if a video is available online.",
   "homepage": "https://github.com/marcmascarell/video-checker",
   "keywords": [
     "video check",
