@@ -1,8 +1,8 @@
 Video Checker
 =========
 
-[![Latest Stable Version](https://poser.pugx.org/mascame/arrayer/v/stable.svg)](https://packagist.org/packages/mascame/video-checker)
-[![License](https://poser.pugx.org/mascame/arrayer/license.svg)](https://packagist.org/packages/mascame/video-checker)
+[![Latest Stable Version](https://poser.pugx.org/mascame/video-checker/v/stable.svg)](https://packagist.org/packages/mascame/video-checker)
+[![License](https://poser.pugx.org/mascame/video-checker/license.svg)](https://packagist.org/packages/mascame/video-checker)
 
 Check if a video is available online.
 
