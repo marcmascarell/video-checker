@@ -4,7 +4,7 @@ class TestVideoChecker extends PHPUnit_Framework_TestCase
 {
     const FAKE_VIDEO_ID = 'FAKE-VIDEO-ID';
 
-    public function testYoutubeProvider()
+    public function testYoutubeOkProvider()
     {
         $this->provider(new \Mascame\VideoChecker\YoutubeProvider(), [
             'SVaD8rouJn0',
@@ -12,8 +12,18 @@ class TestVideoChecker extends PHPUnit_Framework_TestCase
             's6mMvBeEPT4',
             'iopcfR1vI5I',
             '1G4isv_Fylg',
-            '1Uw6ZkbsAH8',
+            '1Uw6ZkbsAH8'
         ]);
+    }
+
+    public function testYoutubeKoProvider()
+    {
+        $this->providerCountry(new \Mascame\VideoChecker\YoutubeProvider(), [
+            'GOHXRe9o_Ls',
+            'bo2qWi7ENSc',
+            'jekBUo2uN8M',
+            'Sts3GeZszAI'
+        ], false, 'ES');
     }
 
     public function testVimeoProvider()
@@ -24,7 +34,7 @@ class TestVideoChecker extends PHPUnit_Framework_TestCase
             '106681343',
             '140514801',
             '35925323',
-            '33917836',
+            '33917836'
         ]);
     }
 
@@ -36,18 +46,29 @@ class TestVideoChecker extends PHPUnit_Framework_TestCase
             'x38nx3w',
             'x38spmm',
             'x38a603',
-            'x38ugxu',
+            'x38ugxu'
         ]);
     }
 
-    public function provider(\Mascame\VideoChecker\CheckerInterface $provider, $workingVideos = [])
+    public function provider(\Mascame\VideoChecker\CheckerInterface $provider, $workingVideos = [], $assert = true)
     {
         foreach ($workingVideos as $video) {
-            $this->assertTrue($provider->check($video));
+            if ($assert) {
+                $this->assertTrue($provider->check($video));
+            } else {
+                $this->assertFalse($provider->check($video));
+            }
         }
+    }
 
-        $this->assertFalse($provider->check(self::FAKE_VIDEO_ID . rand()));
-        $this->assertFalse($provider->check(self::FAKE_VIDEO_ID . rand()));
-        $this->assertFalse($provider->check(self::FAKE_VIDEO_ID . rand()));
+    public function providerCountry(\Mascame\VideoChecker\CheckerInterface $provider, $workingVideos = [], $assert = true, $country = 'US')
+    {
+        foreach ($workingVideos as $video) {
+            if ($assert) {
+                $this->assertTrue($provider->checkByCountry($video, $country));
+            } else {
+                $this->assertFalse($provider->checkByCountry($video, $country));
+            }
+        }
     }
 }
