@@ -41,5 +41,4 @@ abstract class AbstractChecker implements CheckerInterface {
 
         return (strpos($headers[0], '200 OK') !== false);
     }
-
 }
