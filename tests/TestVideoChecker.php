@@ -4,6 +4,8 @@ class TestVideoChecker extends PHPUnit_Framework_TestCase
 {
     const FAKE_VIDEO_ID = 'FAKE-VIDEO-ID';
 
+    const YOUTUBE_API_KEY = null;
+
     public function testYoutubeOkProvider()
     {
         $this->provider(new \Mascame\VideoChecker\YoutubeProvider(), [
@@ -16,14 +18,24 @@ class TestVideoChecker extends PHPUnit_Framework_TestCase
         ]);
     }
 
-    public function testYoutubeKoProvider()
+    public function testYoutubeByCountryKoProvider()
     {
-        $this->providerCountry(new \Mascame\VideoChecker\YoutubeProvider(), [
+        $this->providerCountry(new \Mascame\VideoChecker\YoutubeProvider(self::YOUTUBE_API_KEY), [
             'GOHXRe9o_Ls',
             'bo2qWi7ENSc',
             'jekBUo2uN8M',
             'Sts3GeZszAI'
         ], false, 'ES');
+    }
+
+    public function testYoutubeByCountryOkProvider()
+    {
+        $this->providerCountry(new \Mascame\VideoChecker\YoutubeProvider(self::YOUTUBE_API_KEY), [
+            'SVaD8rouJn0',
+            'Zb5IH57SorQ',
+            's6mMvBeEPT4',
+            'iopcfR1vI5I',
+        ], true, 'ES');
     }
 
     public function testVimeoProvider()

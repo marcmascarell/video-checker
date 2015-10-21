@@ -8,7 +8,22 @@ namespace Mascame\VideoChecker;
  */
 class YoutubeProvider extends AbstractChecker {
 
-    const YOUTUBE_KEY = "";
+    private $apiKey = null;
+
+    /**
+     * @var string
+     */
+    protected $url = 'http://img.youtube.com/vi/{id}/0.jpg';
+
+    /**
+     * @param null $apiKey
+     * @throws \Exception
+     */
+    public function __construct($apiKey = null) {
+        parent::__construct();
+
+        $this->apiKey = $apiKey;
+    }
 
     /**
      * @param $id
@@ -17,22 +32,18 @@ class YoutubeProvider extends AbstractChecker {
      */
     public function checkByCountry($id, $countryLang = false)
     {
-        if (!parent::check($id)) {
-            return false;
-        } else {
-            $res = json_decode(file_get_contents('https://www.googleapis.com/youtube/v3/videos?id=' . $id . '&key=' . self::YOUTUBE_KEY . '&part=contentDetails'), true);
-
-            if (in_array($countryLang, $res['items'][0]['contentDetails']['regionRestriction']['allowed'])) {
-                return true;
-            } else {
-                return false;
-            }
+        if (! $this->apiKey) {
+            throw new \Exception('No API key provided for ' . get_called_class());
         }
-    }
 
-    /**
-     * @var string
-     */
-    protected $url = 'http://img.youtube.com/vi/{id}/0.jpg';
+        if (! parent::check($id)) {
+            return false;
+        }
+
+        $res = json_decode(file_get_contents('https://www.googleapis.com/youtube/v3/videos?id=' . $id . '&key=' . $this->apiKey . '&part=contentDetails'), true);
+
+        return (! isset($res['items'][0]['contentDetails']['regionRestriction'])
+                || in_array($countryLang, $res['items'][0]['contentDetails']['regionRestriction']['allowed']));
+    }
 
 }

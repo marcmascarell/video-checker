@@ -26,6 +26,11 @@ $youtubeProvider = new Mascame\VideoChecker\YoutubeProvider();
 var_dump($youtubeProvider->check('C7OfO6r_5m0')); // true
 var_dump($youtubeProvider->check('CWO3Tuo35-o')); // false
 
+// Check if a video is disponible on a certain country
+$youtubeProviderWithAPI = new Mascame\VideoChecker\YoutubeProvider('MY_API_KEY');
+var_dump($youtubeProviderWithAPI->checkByCountry('GOHXRe9o_Ls', 'ES'));
+var_dump($youtubeProviderWithAPI->checkByCountry('CWO3Tuo35-o', 'IT'));
+
 
 $vimeoProvider = new Mascame\VideoChecker\VimeoProvider();
 
@@ -42,6 +47,11 @@ var_dump($dailymotionProvider->check('x38rpxc3232')); // false
 
 Changelog
 ----
+### 1.2
+- Added API key injection via constructor for YoutubeProvider
+
+### 1.1
+- Added checkByCountry for YoutubeProvider
 
 ### 1.0
 - Added Youtube, Vimeo & Dailymotion providers
