@@ -42,8 +42,10 @@ class YoutubeProvider extends AbstractChecker {
 
         $res = json_decode(file_get_contents('https://www.googleapis.com/youtube/v3/videos?id=' . $id . '&key=' . $this->apiKey . '&part=contentDetails'), true);
 
+        // If no restriction key we assume its valid
         return (! isset($res['items'][0]['contentDetails']['regionRestriction'])
-                || in_array($countryLang, $res['items'][0]['contentDetails']['regionRestriction']['allowed']));
+            || isset($res['items'][0]['contentDetails']['regionRestriction']['allowed'])
+            && in_array($countryLang, $res['items'][0]['contentDetails']['regionRestriction']['allowed']));
     }
 
 }
