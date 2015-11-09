@@ -13,7 +13,7 @@ class YoutubeProvider extends AbstractChecker {
     /**
      * @var string
      */
-    protected $url = 'http://img.youtube.com/vi/{id}/0.jpg';
+    protected $url = 'http://www.youtube.com/oembed?format=json&url=https://www.youtube.com/watch?v={id}';
 
     /**
      * @param null $apiKey

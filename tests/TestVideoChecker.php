@@ -14,8 +14,15 @@ class TestVideoChecker extends PHPUnit_Framework_TestCase
             's6mMvBeEPT4',
             'iopcfR1vI5I',
             '1G4isv_Fylg',
-            '1Uw6ZkbsAH8'
+            '1Uw6ZkbsAH8',
         ]);
+    }
+
+    public function testYoutubeKoProvider()
+    {
+        $this->provider(new \Mascame\VideoChecker\YoutubeProvider(), [
+            'Q1Im__cEBr0',
+        ], false);
     }
 
     public function testYoutubeByCountryKoProvider()
