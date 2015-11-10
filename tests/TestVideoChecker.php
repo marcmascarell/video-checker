@@ -22,6 +22,7 @@ class TestVideoChecker extends PHPUnit_Framework_TestCase
     {
         $this->provider(new \Mascame\VideoChecker\YoutubeProvider(), [
             'Q1Im__cEBr0',
+            'E9ac6FM4R7o'
         ], false);
     }
 

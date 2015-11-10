@@ -15,6 +15,10 @@ class YoutubeProvider extends AbstractChecker {
      */
     protected $url = 'http://www.youtube.com/oembed?format=json&url=https://www.youtube.com/watch?v={id}';
 
+    protected $videoUrl = 'https://www.youtube.com/watch?v={id}';
+
+    protected $checkRegex = "/id=\\\"player-unavailable\\\" class=\\\".*(hid\\s).*?\\\"/";
+
     /**
      * @param null $apiKey
      * @throws \Exception
@@ -23,6 +27,33 @@ class YoutubeProvider extends AbstractChecker {
         parent::__construct();
 
         $this->apiKey = $apiKey;
+    }
+
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function check($id) {
+        $isValid = parent::check($id);
+
+        if (! $isValid) return false;
+
+        return $this->checkByRegex($id);
+    }
+
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function checkByRegex($id) {
+        $contents = file_get_contents(
+            $this->buildURL($id, $this->videoUrl)
+        );
+
+        preg_match($this->checkRegex, $contents, $matches);
+
+        // If there are no matches its not available
+        return (empty($matches)) ? false : true;
     }
 
     /**
@@ -36,7 +67,7 @@ class YoutubeProvider extends AbstractChecker {
             throw new \Exception('No API key provided for ' . get_called_class());
         }
 
-        if (! parent::check($id)) {
+        if (! $this->check($id)) {
             return false;
         }
 

@@ -26,8 +26,10 @@ abstract class AbstractChecker implements CheckerInterface {
      * @param $id
      * @return mixed
      */
-    protected function buildURL($id) {
-        return str_replace('{id}', $id, $this->url);
+    protected function buildURL($id, $url = null) {
+        if (! $url) $url = $this->url;
+
+        return str_replace('{id}', $id, $url);
     }
 
     /**
