@@ -10,12 +10,7 @@ class YoutubeProvider extends AbstractChecker {
 
     private $apiKey = null;
 
-    /**
-     * @var string
-     */
-    protected $url = 'http://www.youtube.com/oembed?format=json&url=https://www.youtube.com/watch?v={id}';
-
-    protected $videoUrl = 'https://www.youtube.com/watch?v={id}';
+    protected $url = 'https://www.youtube.com/watch?v={id}';
 
     protected $checkRegex = "/id=\\\"player-unavailable\\\" class=\\\".*(hid\\s).*?\\\"/";
 
@@ -34,10 +29,6 @@ class YoutubeProvider extends AbstractChecker {
      * @return bool
      */
     public function check($id) {
-        $isValid = parent::check($id);
-
-        if (! $isValid) return false;
-
         return $this->checkByRegex($id);
     }
 
@@ -47,7 +38,7 @@ class YoutubeProvider extends AbstractChecker {
      */
     public function checkByRegex($id) {
         $contents = file_get_contents(
-            $this->buildURL($id, $this->videoUrl)
+            $this->buildURL($id, $this->url)
         );
 
         preg_match($this->checkRegex, $contents, $matches);
