@@ -11,7 +11,7 @@ Installation
 
 Require this package in your composer.json and run composer update:
 
-    "mascame/video-checker": "1.*"
+    "mascame/video-checker": "2.*"
 
 
 Usage
@@ -26,15 +26,18 @@ $youtubeProvider = new Mascame\VideoChecker\YoutubeProvider();
 var_dump($youtubeProvider->check('C7OfO6r_5m0')); // true
 var_dump($youtubeProvider->check('CWO3Tuo35-o')); // false
 
-// Check if a video is disponible on a certain country
+// Check if a video is disponible with API
 $youtubeProviderWithAPI = new Mascame\VideoChecker\YoutubeProvider('MY_API_KEY');
-var_dump($youtubeProviderWithAPI->checkByCountry('GOHXRe9o_Ls', 'ES'));
-var_dump($youtubeProviderWithAPI->checkByCountry('CWO3Tuo35-o', 'IT'));
 
+var_dump($youtubeProviderWithAPI->check('GOHXRe9o_Ls'));
+
+// Check if a video is disponible on a certain country
+var_dump($youtubeProviderWithAPI->check('GOHXRe9o_Ls', 'ES'));
+var_dump($youtubeProviderWithAPI->check('CWO3Tuo35-o', 'IT'));
 
 $vimeoProvider = new Mascame\VideoChecker\VimeoProvider();
 
-var_dump($vimeoProvider->check(31161781)); // true
+var_dump($vimeoProvider->check('31161781')); // true
 var_dump($vimeoProvider->check('34134308a')); // false
 
 
@@ -47,6 +50,11 @@ var_dump($dailymotionProvider->check('x38rpxc3232')); // false
 
 Changelog
 ----
+### 2.0
+- Allow Youtube API check without country specified
+- Simplified API
+- Updated tests
+
 ### 1.2
 - Added API key injection via constructor for YoutubeProvider
 
