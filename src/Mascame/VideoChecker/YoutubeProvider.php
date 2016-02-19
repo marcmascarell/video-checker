@@ -8,13 +8,31 @@ namespace Mascame\VideoChecker;
  */
 class YoutubeProvider extends AbstractChecker {
 
+    /**
+     * @var null
+     */
     private $apiKey = null;
 
+    /**
+     * @var null
+     */
+    protected $apiResponse = null;
+
+    /**
+     * @var string
+     */
     protected $url = 'https://www.youtube.com/watch?v={id}';
 
+    /**
+     * @var string
+     */
     protected $checkRegex = "/id=\\\"player-unavailable\\\" class=\\\".*(hid\\s).*?\\\"/";
 
-    protected $checkedLinks = [];
+    /**
+     * @var array
+     */
+    protected $storedIds = [];
+
 
     /**
      * @param null $apiKey
@@ -27,13 +45,17 @@ class YoutubeProvider extends AbstractChecker {
     }
 
     /**
-     * @param $id
+     * @param string|array $id
      * @param bool|false $country ISO
-     * @return bool
+     * @return bool|array
      * @throws \Exception
      */
     public function check($id, $country = false) {
         if (! $this->apiKey) return $this->checkByRegex($id);
+
+        $this->apiRequest($id);
+
+        if (is_array($id)) return $this->arrayCheck($id, $country);
 
         if ($this->simpleCheck($id)) {
             if ($country) return $this->checkByCountry($id, $country);
@@ -62,15 +84,28 @@ class YoutubeProvider extends AbstractChecker {
     }
 
     /**
+     * @param array $ids
+     * @param null $country
+     * @return array
+     */
+    protected function arrayCheck(array $ids, $country = null) {
+        $result = [];
+
+        foreach ($ids as $id) {
+            $result[$id] = $this->check($id, $country);
+        }
+
+        return $result;
+    }
+
+    /**
      * If there are results, video exists (you still should take care of country)
      *
      * @param $id
      * @return bool
      */
     protected function simpleCheck($id) {
-        $res = $this->apiRequest($id);
-
-        return (isset($res['pageInfo']['totalResults']) && $res['pageInfo']['totalResults'] > 0);
+        return isset($this->storedIds[$id]);
     }
 
     /**
@@ -80,25 +115,56 @@ class YoutubeProvider extends AbstractChecker {
      * @throws \Exception
      */
     protected function checkByCountry($id, $country = false) {
-        $res = $this->apiRequest($id);
+        $item = $this->storedIds[$id];
 
-        // If no restriction key we assume its valid
+        if (! isset($item['contentDetails']['regionRestriction'])) return true;
+
+        $regionRestriction = $item['contentDetails']['regionRestriction'];
+
         return (
-            ! isset($res['items'][0]['contentDetails']['regionRestriction'])
-            || isset($res['items'][0]['contentDetails']['regionRestriction']['allowed']) && in_array($country, $res['items'][0]['contentDetails']['regionRestriction']['allowed'])
-            || isset($res['items'][0]['contentDetails']['regionRestriction']['blocked']) && ! in_array($country, $res['items'][0]['contentDetails']['regionRestriction']['blocked'])
+            isset($regionRestriction['allowed']) && in_array($country, $regionRestriction['allowed'])
+            || isset($regionRestriction['blocked']) && ! in_array($country, $regionRestriction['blocked'])
         );
     }
 
+    /**
+     * Wont make new calls if we already stored an ID
+     *
+     * @param $id
+     * @return mixed
+     */
     protected function apiRequest($id) {
-        if (isset($this->checkedLinks[$id])) return $this->checkedLinks[$id];
+        $idParam = $id;
 
-        $this->checkedLinks[$id] = json_decode(
-            file_get_contents('https://www.googleapis.com/youtube/v3/videos?id=' . $id . '&key=' . $this->apiKey . '&part=contentDetails'),
+        if (is_array($id)) {
+            if (count($id) > 50) new \Exception('Maximum simultaneous ids for Youtube API call is 50.');
+
+            $idParam = implode(',', $id);
+        } else {
+            if (isset($this->storedIds[$id])) return $this->storedIds[$id];
+        }
+
+        $response = json_decode(
+            file_get_contents('https://www.googleapis.com/youtube/v3/videos?id=' . $idParam . '&key=' . $this->apiKey . '&part=contentDetails'),
             true
         );
 
-        return $this->checkedLinks[$id];
+        if (is_array($id)) {
+            $this->storeIndividually($response);
+        } else {
+            $this->storedIds[$id] = isset($response['items'][0]) ? $response['items'][0] : null;
+        }
+
+        return $this->apiResponse = $response;
+    }
+
+    /**
+     * @param $response
+     */
+    protected function storeIndividually($response) {
+        foreach ($response['items'] as $item) {
+            $this->storedIds[$item['id']] = $item;
+        }
     }
 
 }

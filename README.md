@@ -29,27 +29,37 @@ var_dump($youtubeProvider->check('CWO3Tuo35-o')); // false
 // Check if a video is disponible with API
 $youtubeProviderWithAPI = new Mascame\VideoChecker\YoutubeProvider('MY_API_KEY');
 
-var_dump($youtubeProviderWithAPI->check('GOHXRe9o_Ls'));
+var_dump($youtubeProviderWithAPI->check('GOHXRe9o_Ls')); //false
 
 // Check if a video is disponible on a certain country
-var_dump($youtubeProviderWithAPI->check('GOHXRe9o_Ls', 'ES'));
-var_dump($youtubeProviderWithAPI->check('CWO3Tuo35-o', 'IT'));
+var_dump($youtubeProviderWithAPI->check('GOHXRe9o_Ls', 'ES')); // false
+var_dump($youtubeProviderWithAPI->check('CWO3Tuo35-o', 'IT')); // true
+
+// As array (youtube has an API limit of 50 ids per call)
+var_dump($youtubeProviderWithAPI->check(['CWO3Tuo35-o', 'GOHXRe9o_Ls'], 'ES')); // ['CWO3Tuo35-o' => true, 'GOHXRe9o_Ls' => false]
 
 $vimeoProvider = new Mascame\VideoChecker\VimeoProvider();
 
 var_dump($vimeoProvider->check('31161781')); // true
 var_dump($vimeoProvider->check('34134308a')); // false
 
-
 $dailymotionProvider = new Mascame\VideoChecker\DailymotionProvider();
 
 var_dump($dailymotionProvider->check('x38rpxc')); // true
 var_dump($dailymotionProvider->check('x38rpxc3232')); // false
 
+// As array
+var_dump($dailymotionProvider->check(['x38rpxc', 'x38rpxc3232'])); // ['x38rpxc' => true, 'x38rpxc3232' => false]
+
 ```
 
 Changelog
 ----
+
+### 2.1
+- Allows array as parameter in 'check' method (output will be an array ['video-id' => bool, 'video-id2' => bool])
+- Youtube Provider: Using ids parameter as array will avoid unneeded API calls (and dont waste quota)
+
 ### 2.0
 - Allow Youtube API check without country specified
 - Simplified API

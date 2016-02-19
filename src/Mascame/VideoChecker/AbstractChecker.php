@@ -33,10 +33,20 @@ abstract class AbstractChecker implements CheckerInterface {
     }
 
     /**
-     * @param $id
-     * @return bool
+     * @param string|array $id
+     * @return bool|array
      */
     public function check($id, $country = null) {
+        if (is_array($id)) {
+            $results = [];
+
+            foreach ($id as $videoId) {
+                $results[$videoId] = $this->check($videoId, $country);
+            }
+
+            return $results;
+        }
+
         $headers = get_headers($this->buildURL($id));
 
         if (! $headers) return false;
