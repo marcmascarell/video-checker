@@ -11,7 +11,6 @@ class TestVideoChecker extends PHPUnit_Framework_TestCase
         $this->provider(new \Mascame\VideoChecker\YoutubeProvider(), [
             'SVaD8rouJn0',
             'Zb5IH57SorQ',
-            's6mMvBeEPT4',
             'iopcfR1vI5I',
             '1G4isv_Fylg',
             '1Uw6ZkbsAH8',
@@ -22,26 +21,27 @@ class TestVideoChecker extends PHPUnit_Framework_TestCase
     {
         $this->provider(new \Mascame\VideoChecker\YoutubeProvider(), [
             'Q1Im__cEBr0',
-            'E9ac6FM4R7o'
+            'E9ac6FM4R7o',
+            's6mMvBeEPT4'
         ], false);
     }
 
     public function testYoutubeByCountryKoProvider()
     {
-        $this->providerCountry(new \Mascame\VideoChecker\YoutubeProvider(self::YOUTUBE_API_KEY), [
+        $this->provider(new \Mascame\VideoChecker\YoutubeProvider(self::YOUTUBE_API_KEY), [
             'GOHXRe9o_Ls',
             'bo2qWi7ENSc',
             'jekBUo2uN8M',
-            'Sts3GeZszAI'
+            'Sts3GeZszAI',
+            's6mMvBeEPT4',
         ], false, 'ES');
     }
 
     public function testYoutubeByCountryOkProvider()
     {
-        $this->providerCountry(new \Mascame\VideoChecker\YoutubeProvider(self::YOUTUBE_API_KEY), [
+        $this->provider(new \Mascame\VideoChecker\YoutubeProvider(self::YOUTUBE_API_KEY), [
             'SVaD8rouJn0',
             'Zb5IH57SorQ',
-            's6mMvBeEPT4',
             'iopcfR1vI5I',
         ], true, 'ES');
     }
@@ -70,25 +70,15 @@ class TestVideoChecker extends PHPUnit_Framework_TestCase
         ]);
     }
 
-    public function provider(\Mascame\VideoChecker\CheckerInterface $provider, $workingVideos = [], $assert = true)
+    public function provider(\Mascame\VideoChecker\CheckerInterface $provider, $workingVideos = [], $assert = true, $country = 'US')
     {
         foreach ($workingVideos as $video) {
             if ($assert) {
-                $this->assertTrue($provider->check($video));
+                $this->assertTrue($provider->check($video, $country));
             } else {
-                $this->assertFalse($provider->check($video));
+                $this->assertFalse($provider->check($video, $country));
             }
         }
     }
 
-    public function providerCountry(\Mascame\VideoChecker\CheckerInterface $provider, $workingVideos = [], $assert = true, $country = 'US')
-    {
-        foreach ($workingVideos as $video) {
-            if ($assert) {
-                $this->assertTrue($provider->checkByCountry($video, $country));
-            } else {
-                $this->assertFalse($provider->checkByCountry($video, $country));
-            }
-        }
-    }
 }

@@ -10,8 +10,9 @@ interface CheckerInterface {
 
     /**
      * @param $id
-     * @return bool
+     * @param null $country
+     * @return mixed
      */
-    public function check($id);
+    public function check($id, $country = null);
 
 }

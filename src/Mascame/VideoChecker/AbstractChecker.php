@@ -36,7 +36,7 @@ abstract class AbstractChecker implements CheckerInterface {
      * @param $id
      * @return bool
      */
-    public function check($id) {
+    public function check($id, $country = null) {
         $headers = get_headers($this->buildURL($id));
 
         if (! $headers) return false;

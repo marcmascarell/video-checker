@@ -14,6 +14,8 @@ class YoutubeProvider extends AbstractChecker {
 
     protected $checkRegex = "/id=\\\"player-unavailable\\\" class=\\\".*(hid\\s).*?\\\"/";
 
+    protected $checkedLinks = [];
+
     /**
      * @param null $apiKey
      * @throws \Exception
@@ -26,13 +28,25 @@ class YoutubeProvider extends AbstractChecker {
 
     /**
      * @param $id
+     * @param bool|false $country ISO
      * @return bool
+     * @throws \Exception
      */
-    public function check($id) {
-        return $this->checkByRegex($id);
+    public function check($id, $country = false) {
+        if (! $this->apiKey) return $this->checkByRegex($id);
+
+        if ($this->simpleCheck($id)) {
+            if ($country) return $this->checkByCountry($id, $country);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
+     * Use if you don't have API key or you make low volume requests
+     *
      * @param $id
      * @return bool
      */
@@ -48,26 +62,43 @@ class YoutubeProvider extends AbstractChecker {
     }
 
     /**
+     * If there are results, video exists (you still should take care of country)
+     *
      * @param $id
-     * @param $countryLang ISO country lang
      * @return bool
      */
-    public function checkByCountry($id, $countryLang = false)
-    {
-        if (! $this->apiKey) {
-            throw new \Exception('No API key provided for ' . get_called_class());
-        }
+    protected function simpleCheck($id) {
+        $res = $this->apiRequest($id);
 
-        if (! $this->check($id)) {
-            return false;
-        }
+        return (isset($res['pageInfo']['totalResults']) && $res['pageInfo']['totalResults'] > 0);
+    }
 
-        $res = json_decode(file_get_contents('https://www.googleapis.com/youtube/v3/videos?id=' . $id . '&key=' . $this->apiKey . '&part=contentDetails'), true);
+    /**
+     * @param $id
+     * @param bool|false $country
+     * @return bool
+     * @throws \Exception
+     */
+    protected function checkByCountry($id, $country = false) {
+        $res = $this->apiRequest($id);
 
         // If no restriction key we assume its valid
-        return (! isset($res['items'][0]['contentDetails']['regionRestriction'])
-            || isset($res['items'][0]['contentDetails']['regionRestriction']['allowed'])
-            && in_array($countryLang, $res['items'][0]['contentDetails']['regionRestriction']['allowed']));
+        return (
+            ! isset($res['items'][0]['contentDetails']['regionRestriction'])
+            || isset($res['items'][0]['contentDetails']['regionRestriction']['allowed']) && in_array($country, $res['items'][0]['contentDetails']['regionRestriction']['allowed'])
+            || isset($res['items'][0]['contentDetails']['regionRestriction']['blocked']) && ! in_array($country, $res['items'][0]['contentDetails']['regionRestriction']['blocked'])
+        );
+    }
+
+    protected function apiRequest($id) {
+        if (isset($this->checkedLinks[$id])) return $this->checkedLinks[$id];
+
+        $this->checkedLinks[$id] = json_decode(
+            file_get_contents('https://www.googleapis.com/youtube/v3/videos?id=' . $id . '&key=' . $this->apiKey . '&part=contentDetails'),
+            true
+        );
+
+        return $this->checkedLinks[$id];
     }
 
 }
