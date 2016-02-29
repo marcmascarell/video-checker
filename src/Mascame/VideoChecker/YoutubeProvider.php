@@ -33,6 +33,11 @@ class YoutubeProvider extends AbstractChecker {
      */
     protected $storedIds = [];
 
+    /**
+     * @var int
+     */
+    protected $apiCallsCount = 0;
+
 
     /**
      * @param null $apiKey
@@ -105,7 +110,7 @@ class YoutubeProvider extends AbstractChecker {
      * @return bool
      */
     protected function simpleCheck($id) {
-        return isset($this->storedIds[$id]);
+        return isset($this->storedIds[$id]) && ($this->storedIds[$id] != false);
     }
 
     /**
@@ -149,22 +154,41 @@ class YoutubeProvider extends AbstractChecker {
             true
         );
 
-        if (is_array($id)) {
-            $this->storeIndividually($response);
-        } else {
-            $this->storedIds[$id] = isset($response['items'][0]) ? $response['items'][0] : null;
+        if ($response) {
+            $this->apiCallsCount++;
+
+            if (is_array($id)) {
+                $this->storeIndividually($id, $response);
+            } else {
+                $this->storedIds[$id] = isset($response['items'][0]) ? $response['items'][0] : null;
+            }
         }
 
         return $this->apiResponse = $response;
     }
 
     /**
+     * @param $ids
      * @param $response
+     * @return array
      */
-    protected function storeIndividually($response) {
+    protected function storeIndividually($ids, $response) {
+        foreach ($ids as $id) {
+            $this->storedIds[$id] = false;
+        }
+
         foreach ($response['items'] as $item) {
             $this->storedIds[$item['id']] = $item;
         }
+
+        return $this->storedIds;
     }
 
+    /**
+     * @return int
+     */
+    public function getApiCallsCount()
+    {
+        return $this->apiCallsCount;
+    }
 }
