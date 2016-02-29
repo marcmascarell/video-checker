@@ -56,6 +56,10 @@ var_dump($dailymotionProvider->check(['x38rpxc', 'x38rpxc3232'])); // ['x38rpxc'
 Changelog
 ----
 
+### 2.2
+- Fixes stored Ids when was not in API response items
+- Youtube Provider: get total API calls
+
 ### 2.1
 - Allows array as parameter in 'check' method (output will be an array ['video-id' => bool, 'video-id2' => bool])
 - Youtube Provider: Using ids parameter as array will avoid unneeded API calls (and dont waste quota)
