@@ -137,6 +137,7 @@ class YoutubeProvider extends AbstractChecker {
      *
      * @param $id
      * @return mixed
+     * @throws \Exception
      */
     protected function apiRequest($id) {
         $idParam = $id;
@@ -149,19 +150,21 @@ class YoutubeProvider extends AbstractChecker {
             if (isset($this->storedIds[$id])) return $this->storedIds[$id];
         }
 
-        $response = json_decode(
-            file_get_contents('https://www.googleapis.com/youtube/v3/videos?id=' . $idParam . '&key=' . $this->apiKey . '&part=contentDetails'),
-            true
-        );
+        $response = file_get_contents('https://www.googleapis.com/youtube/v3/videos?id=' . $idParam . '&key=' . $this->apiKey . '&part=contentDetails');
 
-        if ($response) {
-            $this->apiCallsCount++;
+        if ($response) $response = json_decode($response, true);
 
-            if (is_array($id)) {
-                $this->storeIndividually($id, $response);
-            } else {
-                $this->storedIds[$id] = isset($response['items'][0]) ? $response['items'][0] : null;
-            }
+        if ( ! $response || isset($response['error'])) {
+            // Avoids continuing with the validation... else we always gonna have falsey results
+            throw new \Exception('Youtube API responded with errors: ' . $response['error']);
+        }
+
+        $this->apiCallsCount++;
+
+        if (is_array($id)) {
+            $this->storeIndividually($id, $response);
+        } else {
+            $this->storedIds[$id] = isset($response['items'][0]) ? $response['items'][0] : null;
         }
 
         return $this->apiResponse = $response;

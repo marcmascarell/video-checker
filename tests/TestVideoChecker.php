@@ -2,9 +2,7 @@
 
 class TestVideoChecker extends PHPUnit_Framework_TestCase
 {
-    const FAKE_VIDEO_ID = 'FAKE-VIDEO-ID';
-
-    const YOUTUBE_API_KEY = 'AIzaSyD7BZyj9W0rnCN8yJQd0bH1mGQRbYn9P9c';
+    const YOUTUBE_API_KEY = 'YOUR-API-KEY';
 
     protected $youtubeCountryFail = [
         'GOHXRe9o_Ls',

@@ -53,8 +53,19 @@ var_dump($dailymotionProvider->check(['x38rpxc', 'x38rpxc3232'])); // ['x38rpxc'
 
 ```
 
+Running tests
+----
+Install composer dependencies in development mode
+
+`composer update --dev`
+
+`vendor/bin/phpunit tests/TestVideoChecker.php`
+
 Changelog
 ----
+
+### 2.3
+- Youtube Provider: Throw exception if API call fails or has errors (to avoid false negatives)
 
 ### 2.2
 - Fixes stored Ids when was not in API response items
